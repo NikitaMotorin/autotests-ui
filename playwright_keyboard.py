@@ -10,4 +10,10 @@ with sync_playwright() as playwright:
     email_input = page.get_by_test_id('login-form-email-input').locator('input')
     email_input.focus()
 
-    
+    for char in "user@gmail.com":
+
+        page.keyboard.press(char, delay=300)
+
+    page.keyboard.press("ControlOrMeta+A")
+
+    page.wait_for_timeout(5000)
