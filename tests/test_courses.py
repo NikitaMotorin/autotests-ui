@@ -1,23 +1,52 @@
 import pytest
-from playwright.sync_api import sync_playwright, expect, Page
+from pages.courses_list_page import CoursesListPage
+from pages.create_course_page import CreateCoursePage
 
 @pytest.mark.courses
 @pytest.mark.regression
-def test_empty_courses_list(initialize_browser_state, chromium_page_with_state: Page):
+def test_empty_courses_list(initialize_browser_state, courses_list_page: CoursesListPage):
+        courses_list_page.visit("https://nikita-filonov.github.io/qa-automation-engineer-ui-course/#/courses")
+        courses_list_page.navbar.check_visible("username")
+        courses_list_page.sidebar.check_visible()
+        courses_list_page.check_visible_empty_view()
+        courses_list_page.toolbar_view.check_visible()
 
-        chromium_page_with_state.goto("https://nikita-filonov.github.io/qa-automation-engineer-ui-course/#/courses")
+@pytest.mark.courses
+@pytest.mark.regression
+def test_create_course(initialize_browser_state, create_course_page: CreateCoursePage, courses_list_page: CoursesListPage):
+        create_course_page.visit("https://nikita-filonov.github.io/qa-automation-engineer-ui-course/#/courses/create")
 
-        courses_title = chromium_page_with_state.get_by_test_id("courses-list-toolbar-title-text")
-        expect(courses_title).to_be_visible()
-        expect(courses_title).to_have_text("Courses")
+        create_course_page.toolbar_view.check_visible()
+        create_course_page.toolbar_view.check_disabled()
+        create_course_page.image_upload_widget.check_visible(is_image_uploaded=False)
+        create_course_page.create_course.check_visible(
+                "",
+                "",
+                "",
+                "0",
+                "0"
+        )
+        create_course_page.exercise_toolbar_view.check_visible()
+        create_course_page.check_visible_exercises_empty_view()
+        create_course_page.image_upload_widget.upload_preview_image("./testdata/files/image.png")
+        create_course_page.image_upload_widget.check_visible(is_image_uploaded=True)
+        create_course_page.create_course.fill(
+                "Playwright",
+                "2 week",
+                "Playwright",
+                "100",
+                "10"
+        )
+        create_course_page.toolbar_view.click_create_course_button()
+        courses_list_page.toolbar_view.check_visible()
+        courses_list_page.course_view.check_visible(
+                0,
+                "Playwright",
+                "100",
+                "10",
+                "2 week"
+        )
 
-        courses_list_empty = chromium_page_with_state.get_by_test_id("courses-list-empty-view-icon")
-        expect(courses_list_empty).to_be_visible()
 
-        courses_list_title = chromium_page_with_state.get_by_test_id("courses-list-empty-view-title-text")
-        expect(courses_list_title).to_be_visible()
-        expect(courses_list_title).to_have_text("There is no results")
 
-        courses_description = chromium_page_with_state.get_by_test_id("courses-list-empty-view-description-text")
-        expect(courses_description).to_be_visible()
-        expect(courses_description).to_have_text("Results from the load test pipeline will be displayed here")
+
