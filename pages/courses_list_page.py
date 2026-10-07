@@ -1,4 +1,4 @@
-from playwright.sync_api import Page, expect
+from playwright.sync_api import Page
 
 from components.courses.course_view_component import CourseViewComponent
 from components.courses.courses_list_toolbar_view_component import CoursesListToolbarViewComponent

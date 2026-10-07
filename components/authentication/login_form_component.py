@@ -1,13 +1,15 @@
 from playwright.sync_api import Page, expect
 
 from components.base_component import BaseComponent
+from elements.input import Input
+
 
 class LoginFormComponent(BaseComponent):
     def __init__(self, page: Page):
         super().__init__(page)
 
-        self.email_input = page.get_by_test_id("login-form-email-input").locator("input")
-        self.password_input = page.get_by_test_id("login-form-password-input").locator("input")
+        self.email_input = Input(page, "login-form-email-input", "Email").get_locator()
+        self.password_input = Input(page, "login-form-password-input", "Password").get_locator()
 
     def fill(self, email: str, password: str):
         self.email_input.fill(email)
